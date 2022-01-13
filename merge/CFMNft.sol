@@ -2,77 +2,122 @@ pragma solidity ^0.5.6;
 
 
 /**
- * @dev Contract module which provides a basic access control mechanism, where
- * there is an account (an owner) that can be granted exclusive access to
- * specific functions.
+ * @dev Interface of the KIP-13 standard, as defined in the
+ * [KIP-13](http://kips.klaytn.com/KIPs/kip-13-interface_query_standard).
  *
- * This module is used through inheritance. It will make available the modifier
- * `onlyOwner`, which can be aplied to your functions to restrict their use to
- * the owner.
+ * Implementers can declare support of contract interfaces, which can then be
+ * queried by others.
+ *
+ * For an implementation, see `KIP13`.
  */
-contract Ownable {
-    address payable private _owner;
-
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
-
+interface IKIP13 {
     /**
-     * @dev Initializes the contract setting the deployer as the initial owner.
-     */
-    constructor () internal {
-        _owner = msg.sender;
-        emit OwnershipTransferred(address(0), _owner);
-    }
-
-    /**
-     * @dev Returns the address of the current owner.
-     */
-    function owner() public view returns (address payable) {
-        return _owner;
-    }
-
-    /**
-     * @dev Throws if called by any account other than the owner.
-     */
-    modifier onlyOwner() {
-        require(isOwner(), "Ownable: caller is not the owner");
-        _;
-    }
-
-    /**
-     * @dev Returns true if the caller is the current owner.
-     */
-    function isOwner() public view returns (bool) {
-        return msg.sender == _owner;
-    }
-
-    /**
-     * @dev Leaves the contract without owner. It will not be possible to call
-     * `onlyOwner` functions anymore. Can only be called by the current owner.
+     * @dev Returns true if this contract implements the interface defined by
+     * `interfaceId`. See the corresponding
+     * [KIP-13 section](http://kips.klaytn.com/KIPs/kip-13-interface_query_standard#how-interface-identifiers-are-defined)
+     * to learn more about how these ids are created.
      *
-     * > Note: Renouncing ownership will leave the contract without an owner,
-     * thereby removing any functionality that is only available to the owner.
+     * This function call must use less than 30 000 gas.
      */
-    function renounceOwnership() public onlyOwner {
-        emit OwnershipTransferred(_owner, address(0));
-        _owner = address(0);
-    }
+    function supportsInterface(bytes4 interfaceId) external view returns (bool);
+}
+
+/**
+ * @dev Required interface of an KIP17 compliant contract.
+ */
+contract IKIP17 is IKIP13 {
+    event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
+    event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
+    event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
 
     /**
-     * @dev Transfers ownership of the contract to a new account (`newOwner`).
-     * Can only be called by the current owner.
+     * @dev Returns the number of NFTs in `owner`'s account.
      */
-    function transferOwnership(address payable newOwner) public onlyOwner {
-        _transferOwnership(newOwner);
-    }
+    function balanceOf(address owner) public view returns (uint256 balance);
 
     /**
-     * @dev Transfers ownership of the contract to a new account (`newOwner`).
+     * @dev Returns the owner of the NFT specified by `tokenId`.
      */
-    function _transferOwnership(address payable newOwner) internal {
-        require(newOwner != address(0), "Ownable: new owner is the zero address");
-        emit OwnershipTransferred(_owner, newOwner);
-        _owner = newOwner;
-    }
+    function ownerOf(uint256 tokenId) public view returns (address owner);
+
+    /**
+     * @dev Transfers a specific NFT (`tokenId`) from one account (`from`) to
+     * another (`to`).
+     *
+     * Requirements:
+     * - `from`, `to` cannot be zero.
+     * - `tokenId` must be owned by `from`.
+     * - If the caller is not `from`, it must be have been allowed to move this
+     * NFT by either `approve` or `setApproveForAll`.
+     */
+    function safeTransferFrom(address from, address to, uint256 tokenId) public;
+
+    /**
+     * @dev Transfers a specific NFT (`tokenId`) from one account (`from`) to
+     * another (`to`).
+     *
+     * Requirements:
+     * - If the caller is not `from`, it must be approved to move this NFT by
+     * either `approve` or `setApproveForAll`.
+     */
+    function transferFrom(address from, address to, uint256 tokenId) public;
+    function approve(address to, uint256 tokenId) public;
+    function getApproved(uint256 tokenId) public view returns (address operator);
+
+    function setApprovalForAll(address operator, bool _approved) public;
+    function isApprovedForAll(address owner, address operator) public view returns (bool);
+
+
+    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory data) public;
+}
+
+/**
+ * @title ERC721 token receiver interface
+ * @dev Interface for any contract that wants to support safeTransfers
+ * from ERC721 asset contracts.
+ */
+contract IERC721Receiver {
+    /**
+     * @notice Handle the receipt of an NFT
+     * @dev The ERC721 smart contract calls this function on the recipient
+     * after a `safeTransfer`. This function MUST return the function selector,
+     * otherwise the caller will revert the transaction. The selector to be
+     * returned can be obtained as `this.onERC721Received.selector`. This
+     * function MAY throw to revert and reject the transfer.
+     * Note: the ERC721 contract address is always the message sender.
+     * @param operator The address which called `safeTransferFrom` function
+     * @param from The address which previously owned the token
+     * @param tokenId The NFT identifier which is being transferred
+     * @param data Additional data with no specified format
+     * @return bytes4 `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
+     */
+    function onERC721Received(address operator, address from, uint256 tokenId, bytes memory data)
+    public returns (bytes4);
+}
+
+/**
+ * @title KIP17 token receiver interface
+ * @dev Interface for any contract that wants to support safeTransfers
+ * from KIP17 asset contracts.
+ * @dev see http://kips.klaytn.com/KIPs/kip-17-non_fungible_token
+ */
+contract IKIP17Receiver {
+    /**
+     * @notice Handle the receipt of an NFT
+     * @dev The KIP17 smart contract calls this function on the recipient
+     * after a `safeTransfer`. This function MUST return the function selector,
+     * otherwise the caller will revert the transaction. The selector to be
+     * returned can be obtained as `this.onKIP17Received.selector`. This
+     * function MAY throw to revert and reject the transfer.
+     * Note: the KIP17 contract address is always the message sender.
+     * @param operator The address which called `safeTransferFrom` function
+     * @param from The address which previously owned the token
+     * @param tokenId The NFT identifier which is being transferred
+     * @param data Additional data with no specified format
+     * @return bytes4 `bytes4(keccak256("onKIP17Received(address,address,uint256,bytes)"))`
+     */
+    function onKIP17Received(address operator, address from, uint256 tokenId, bytes memory data)
+    public returns (bytes4);
 }
 
 /**
@@ -228,223 +273,6 @@ library SafeMath {
         require(b != 0, errorMessage);
         return a % b;
     }
-}
-
-/**
- * @dev Interface of the KIP-13 standard, as defined in the
- * [KIP-13](http://kips.klaytn.com/KIPs/kip-13-interface_query_standard).
- *
- * Implementers can declare support of contract interfaces, which can then be
- * queried by others.
- *
- * For an implementation, see `KIP13`.
- */
-interface IKIP13 {
-    /**
-     * @dev Returns true if this contract implements the interface defined by
-     * `interfaceId`. See the corresponding
-     * [KIP-13 section](http://kips.klaytn.com/KIPs/kip-13-interface_query_standard#how-interface-identifiers-are-defined)
-     * to learn more about how these ids are created.
-     *
-     * This function call must use less than 30 000 gas.
-     */
-    function supportsInterface(bytes4 interfaceId) external view returns (bool);
-}
-
-/**
- * @dev Interface of the KIP7 standard as defined in the KIP. Does not include
- * the optional functions; to access them see `KIP7Metadata`.
- * See http://kips.klaytn.com/KIPs/kip-7-fungible_token
- */
-contract IKIP7 is IKIP13 {
-    /**
-     * @dev Returns the amount of tokens in existence.
-     */
-    function totalSupply() external view returns (uint256);
-
-    /**
-     * @dev Returns the amount of tokens owned by `account`.
-     */
-    function balanceOf(address account) external view returns (uint256);
-
-    /**
-     * @dev Moves `amount` tokens from the caller's account to `recipient`.
-     *
-     * Returns a boolean value indicating whether the operation succeeded.
-     *
-     * Emits a `Transfer` event.
-     */
-    function transfer(address recipient, uint256 amount) external returns (bool);
-
-    /**
-     * @dev Returns the remaining number of tokens that `spender` will be
-     * allowed to spend on behalf of `owner` through `transferFrom`. This is
-     * zero by default.
-     *
-     * This value changes when `approve` or `transferFrom` are called.
-     */
-    function allowance(address owner, address spender) external view returns (uint256);
-
-    /**
-     * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.
-     *
-     * Returns a boolean value indicating whether the operation succeeded.
-     *
-     * > Beware that changing an allowance with this method brings the risk
-     * that someone may use both the old and the new allowance by unfortunate
-     * transaction ordering. One possible solution to mitigate this race
-     * condition is to first reduce the spender's allowance to 0 and set the
-     * desired value afterwards:
-     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-     *
-     * Emits an `Approval` event.
-     */
-    function approve(address spender, uint256 amount) external returns (bool);
-
-    /**
-     * @dev Moves `amount` tokens from `sender` to `recipient` using the
-     * allowance mechanism. `amount` is then deducted from the caller's
-     * allowance.
-     *
-     * Returns a boolean value indicating whether the operation succeeded.
-     *
-     * Emits a `Transfer` event.
-     */
-    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
-
-    /**
-    * @dev Moves `amount` tokens from the caller's account to `recipient`.
-    */
-    function safeTransfer(address recipient, uint256 amount, bytes memory data) public;
-
-    /**
-    * @dev  Moves `amount` tokens from the caller's account to `recipient`.
-    */
-    function safeTransfer(address recipient, uint256 amount) public;
-
-    /**
-    * @dev Moves `amount` tokens from `sender` to `recipient` using the allowance mechanism.
-    * `amount` is then deducted from the caller's allowance.
-    */
-    function safeTransferFrom(address sender, address recipient, uint256 amount, bytes memory data) public;
-
-    /**
-    * @dev Moves `amount` tokens from `sender` to `recipient` using the allowance mechanism.
-    * `amount` is then deducted from the caller's allowance.
-    */
-    function safeTransferFrom(address sender, address recipient, uint256 amount) public;
-
-    /**
-     * @dev Emitted when `value` tokens are moved from one account (`from`) to
-     * another (`to`).
-     *
-     * Note that `value` may be zero.
-     */
-    event Transfer(address indexed from, address indexed to, uint256 value);
-
-    /**
-     * @dev Emitted when the allowance of a `spender` for an `owner` is set by
-     * a call to `approve`. `value` is the new allowance.
-     */
-    event Approval(address indexed owner, address indexed spender, uint256 value);
-}
-
-/**
- * @dev Required interface of an KIP17 compliant contract.
- */
-contract IKIP17 is IKIP13 {
-    event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
-    event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
-    event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
-
-    /**
-     * @dev Returns the number of NFTs in `owner`'s account.
-     */
-    function balanceOf(address owner) public view returns (uint256 balance);
-
-    /**
-     * @dev Returns the owner of the NFT specified by `tokenId`.
-     */
-    function ownerOf(uint256 tokenId) public view returns (address owner);
-
-    /**
-     * @dev Transfers a specific NFT (`tokenId`) from one account (`from`) to
-     * another (`to`).
-     *
-     * Requirements:
-     * - `from`, `to` cannot be zero.
-     * - `tokenId` must be owned by `from`.
-     * - If the caller is not `from`, it must be have been allowed to move this
-     * NFT by either `approve` or `setApproveForAll`.
-     */
-    function safeTransferFrom(address from, address to, uint256 tokenId) public;
-
-    /**
-     * @dev Transfers a specific NFT (`tokenId`) from one account (`from`) to
-     * another (`to`).
-     *
-     * Requirements:
-     * - If the caller is not `from`, it must be approved to move this NFT by
-     * either `approve` or `setApproveForAll`.
-     */
-    function transferFrom(address from, address to, uint256 tokenId) public;
-    function approve(address to, uint256 tokenId) public;
-    function getApproved(uint256 tokenId) public view returns (address operator);
-
-    function setApprovalForAll(address operator, bool _approved) public;
-    function isApprovedForAll(address owner, address operator) public view returns (bool);
-
-
-    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory data) public;
-}
-
-/**
- * @title ERC721 token receiver interface
- * @dev Interface for any contract that wants to support safeTransfers
- * from ERC721 asset contracts.
- */
-contract IERC721Receiver {
-    /**
-     * @notice Handle the receipt of an NFT
-     * @dev The ERC721 smart contract calls this function on the recipient
-     * after a `safeTransfer`. This function MUST return the function selector,
-     * otherwise the caller will revert the transaction. The selector to be
-     * returned can be obtained as `this.onERC721Received.selector`. This
-     * function MAY throw to revert and reject the transfer.
-     * Note: the ERC721 contract address is always the message sender.
-     * @param operator The address which called `safeTransferFrom` function
-     * @param from The address which previously owned the token
-     * @param tokenId The NFT identifier which is being transferred
-     * @param data Additional data with no specified format
-     * @return bytes4 `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
-     */
-    function onERC721Received(address operator, address from, uint256 tokenId, bytes memory data)
-    public returns (bytes4);
-}
-
-/**
- * @title KIP17 token receiver interface
- * @dev Interface for any contract that wants to support safeTransfers
- * from KIP17 asset contracts.
- * @dev see http://kips.klaytn.com/KIPs/kip-17-non_fungible_token
- */
-contract IKIP17Receiver {
-    /**
-     * @notice Handle the receipt of an NFT
-     * @dev The KIP17 smart contract calls this function on the recipient
-     * after a `safeTransfer`. This function MUST return the function selector,
-     * otherwise the caller will revert the transaction. The selector to be
-     * returned can be obtained as `this.onKIP17Received.selector`. This
-     * function MAY throw to revert and reject the transfer.
-     * Note: the KIP17 contract address is always the message sender.
-     * @param operator The address which called `safeTransferFrom` function
-     * @param from The address which previously owned the token
-     * @param tokenId The NFT identifier which is being transferred
-     * @param data Additional data with no specified format
-     * @return bytes4 `bytes4(keccak256("onKIP17Received(address,address,uint256,bytes)"))`
-     */
-    function onKIP17Received(address operator, address from, uint256 tokenId, bytes memory data)
-    public returns (bytes4);
 }
 
 /**
@@ -1437,7 +1265,81 @@ contract KIP17Pausable is KIP13, KIP17, Pausable {
     }
 }
 
-contract TteokmillSparrows is Ownable, KIP17Full("Tteokmill Sparrows", "SPARROWS"), KIP17Mintable, KIP17Pausable {
+/**
+ * @dev Contract module which provides a basic access control mechanism, where
+ * there is an account (an owner) that can be granted exclusive access to
+ * specific functions.
+ *
+ * This module is used through inheritance. It will make available the modifier
+ * `onlyOwner`, which can be aplied to your functions to restrict their use to
+ * the owner.
+ */
+contract Ownable {
+    address payable private _owner;
+
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+
+    /**
+     * @dev Initializes the contract setting the deployer as the initial owner.
+     */
+    constructor () internal {
+        _owner = msg.sender;
+        emit OwnershipTransferred(address(0), _owner);
+    }
+
+    /**
+     * @dev Returns the address of the current owner.
+     */
+    function owner() public view returns (address payable) {
+        return _owner;
+    }
+
+    /**
+     * @dev Throws if called by any account other than the owner.
+     */
+    modifier onlyOwner() {
+        require(isOwner(), "Ownable: caller is not the owner");
+        _;
+    }
+
+    /**
+     * @dev Returns true if the caller is the current owner.
+     */
+    function isOwner() public view returns (bool) {
+        return msg.sender == _owner;
+    }
+
+    /**
+     * @dev Leaves the contract without owner. It will not be possible to call
+     * `onlyOwner` functions anymore. Can only be called by the current owner.
+     *
+     * > Note: Renouncing ownership will leave the contract without an owner,
+     * thereby removing any functionality that is only available to the owner.
+     */
+    function renounceOwnership() public onlyOwner {
+        emit OwnershipTransferred(_owner, address(0));
+        _owner = address(0);
+    }
+
+    /**
+     * @dev Transfers ownership of the contract to a new account (`newOwner`).
+     * Can only be called by the current owner.
+     */
+    function transferOwnership(address payable newOwner) public onlyOwner {
+        _transferOwnership(newOwner);
+    }
+
+    /**
+     * @dev Transfers ownership of the contract to a new account (`newOwner`).
+     */
+    function _transferOwnership(address payable newOwner) internal {
+        require(newOwner != address(0), "Ownable: new owner is the zero address");
+        emit OwnershipTransferred(_owner, newOwner);
+        _owner = newOwner;
+    }
+}
+
+contract CFMNft is Ownable, KIP17Full("CfmNft", "C4EINFT"), KIP17Mintable, KIP17Pausable {
 
     event SetMentor(address mentor);
 
@@ -1450,7 +1352,7 @@ contract TteokmillSparrows is Ownable, KIP17Full("Tteokmill Sparrows", "SPARROWS
 
     event SetBaseURI(string baseURI);
 
-    string public baseURI = "https://api.tteok.org/sparrows/";
+    string public baseURI = "https://c4ei.net/nft/";
 
     function setBaseURI(string calldata _baseURI) onlyOwner external {
         baseURI = _baseURI;
@@ -1492,70 +1394,5 @@ contract TteokmillSparrows is Ownable, KIP17Full("Tteokmill Sparrows", "SPARROWS
             msg.sender == owner()
         );
         ments[id] = ment;
-    }
-}
-
-contract TteokmillSparrowsWhitelist is Ownable {
-
-    mapping(address => bool) public added;
-    mapping(address => bool) public whitelist;
-
-    function add(address addr) external {
-        require(added[msg.sender] != true);
-        added[msg.sender] = true;
-        whitelist[addr] = true;
-    }
-
-    function forceCancel(address addr) onlyOwner() external {
-        whitelist[addr] = false;
-    }
-}
-
-contract TteokmillSparrowsMinter is Ownable {
-    using SafeMath for uint256;
-
-    TteokmillSparrows public nft;
-    TteokmillSparrowsWhitelist public whitelist;
-    IKIP7 public ijm;
-
-    constructor(
-        TteokmillSparrows _nft,
-        TteokmillSparrowsWhitelist _whitelist,
-        IKIP7 _ijm
-    ) public {
-        nft = _nft;
-        whitelist = _whitelist;
-        ijm = _ijm;
-    }
-
-    uint256 public mintPrice = 1000 * 1e8;
-    mapping(address => uint256) public mintCounts;
-
-    function setMintPrice(uint256 _price) external onlyOwner {
-        mintPrice = _price;
-    }
-
-    uint256 public limit;
-
-    function setLimit(uint256 _limit) external onlyOwner {
-        limit = _limit;
-    }
-
-    function mint(string calldata ment) external {
-
-        require(limit > 0 && bytes(ment).length > 0);
-        require(whitelist.whitelist(msg.sender));
-        require(mintCounts[msg.sender] < 10);
-
-        uint256 id = nft.totalSupply();
-        nft.mint(msg.sender, id);
-        nft.setMent(id, ment);
-        ijm.transferFrom(msg.sender, address(this), mintPrice);
-        mintCounts[msg.sender] = mintCounts[msg.sender].add(1);
-        limit = limit.sub(1);
-    }
-
-    function withdrawIjm() onlyOwner external {
-        ijm.transfer(owner(), ijm.balanceOf(address(this)));
     }
 }

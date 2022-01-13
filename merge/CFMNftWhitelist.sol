@@ -75,7 +75,7 @@ contract Ownable {
     }
 }
 
-contract TteokmillSparrowsWhitelist is Ownable {
+contract CFMNftWhitelist is Ownable {
 
     mapping(address => bool) public added;
     mapping(address => bool) public whitelist;

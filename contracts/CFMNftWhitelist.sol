@@ -2,7 +2,7 @@ pragma solidity ^0.5.6;
 
 import "./klaytn-contracts/ownership/Ownable.sol";
 
-contract TteokmillSparrowsWhitelist is Ownable {
+contract CFMNftWhitelist is Ownable {
 
     mapping(address => bool) public added;
     mapping(address => bool) public whitelist;

@@ -3,19 +3,19 @@ pragma solidity ^0.5.6;
 import "./klaytn-contracts/ownership/Ownable.sol";
 import "./klaytn-contracts/math/SafeMath.sol";
 import "./klaytn-contracts/token/KIP7/IKIP7.sol";
-import "./TteokmillSparrows.sol";
-import "./TteokmillSparrowsWhitelist.sol";
+import "./CFMNft.sol";
+import "./CFMNftWhitelist.sol";
 
-contract TteokmillSparrowsMinter is Ownable {
+contract CFMNftMinter is Ownable {
     using SafeMath for uint256;
 
-    TteokmillSparrows public nft;
-    TteokmillSparrowsWhitelist public whitelist;
+    CFMNft public nft;
+    CFMNftWhitelist public whitelist;
     IKIP7 public ijm;
 
     constructor(
-        TteokmillSparrows _nft,
-        TteokmillSparrowsWhitelist _whitelist,
+        CFMNft _nft,
+        CFMNftWhitelist _whitelist,
         IKIP7 _ijm
     ) public {
         nft = _nft;

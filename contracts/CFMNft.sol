@@ -5,7 +5,7 @@ import "./klaytn-contracts/token/KIP17/KIP17Mintable.sol";
 import "./klaytn-contracts/token/KIP17/KIP17Pausable.sol";
 import "./klaytn-contracts/ownership/Ownable.sol";
 
-contract TteokmillSparrows is Ownable, KIP17Full("Tteokmill Sparrows", "SPARROWS"), KIP17Mintable, KIP17Pausable {
+contract CFMNft is Ownable, KIP17Full("CfmNft", "C4EINFT"), KIP17Mintable, KIP17Pausable {
 
     event SetMentor(address mentor);
 
@@ -18,7 +18,7 @@ contract TteokmillSparrows is Ownable, KIP17Full("Tteokmill Sparrows", "SPARROWS
 
     event SetBaseURI(string baseURI);
 
-    string public baseURI = "https://api.tteok.org/sparrows/";
+    string public baseURI = "https://c4ei.net/nft/";
 
     function setBaseURI(string calldata _baseURI) onlyOwner external {
         baseURI = _baseURI;
