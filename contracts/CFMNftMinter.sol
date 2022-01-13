@@ -11,16 +11,16 @@ contract CFMNftMinter is Ownable {
 
     CFMNft public nft;
     CFMNftWhitelist public whitelist;
-    IKIP7 public ijm;
+    IKIP7 public cfm;
 
     constructor(
         CFMNft _nft,
         CFMNftWhitelist _whitelist,
-        IKIP7 _ijm
+        IKIP7 _cfm
     ) public {
         nft = _nft;
         whitelist = _whitelist;
-        ijm = _ijm;
+        cfm = _cfm;
     }
 
     uint256 public mintPrice = 1000 * 1e8;
@@ -45,12 +45,12 @@ contract CFMNftMinter is Ownable {
         uint256 id = nft.totalSupply();
         nft.mint(msg.sender, id);
         nft.setMent(id, ment);
-        ijm.transferFrom(msg.sender, address(this), mintPrice);
+        cfm.transferFrom(msg.sender, address(this), mintPrice);
         mintCounts[msg.sender] = mintCounts[msg.sender].add(1);
         limit = limit.sub(1);
     }
 
-    function withdrawIjm() onlyOwner external {
-        ijm.transfer(owner(), ijm.balanceOf(address(this)));
+    function withdrawCfm() onlyOwner external {
+        cfm.transfer(owner(), cfm.balanceOf(address(this)));
     }
 }

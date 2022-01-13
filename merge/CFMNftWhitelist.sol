@@ -1,3 +1,9 @@
+/*
+Metadata of "cfmnftwhitelist" was published successfully.
+CFMNftWhitelist.sol : ipfs://QmdPW431U8YQydmGvnqznCpWXD5pjJBd1L2dbmYKvZYGNt
+metadata.json : ipfs://QmRUBipTopUM8y5ek5PFw7QdRhnS4KTe3rL3FycwJve3Kg
+0xAB2522C95FA629EAC6988b863b130A02C18854e5
+*/
 pragma solidity ^0.5.6;
 
 

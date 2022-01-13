@@ -1,3 +1,11 @@
+/*
+Metadata of "address" was published successfully.
+CFMNft.sol : ipfs://QmdJyPTbPxZnycCEzWVDU4BiMCiFJHFFFckx44F5c96xiV
+metadata.json : ipfs://QmWhRzsotEXHvWwu8Uu4kyBadUhkRc68QLRNnzyFHTZB1a
+0xEc9478B37E4FFd70f52812718F88F3FF0cE87b7C
+
+*/
+
 pragma solidity ^0.5.6;
 
 

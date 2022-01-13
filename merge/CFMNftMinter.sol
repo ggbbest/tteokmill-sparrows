@@ -1,3 +1,22 @@
+/*
+Metadata of "cfmnftminter" was published successfully.
+CFMNftMinter.sol : ipfs://QmPYm2XCvZ5sKjF15pKWpbCMXUwC1igczQMDmhA9NTY6wY
+metadata.json : ipfs://QmNMKDtznKEXWqf75sVKH1Yg6QkUmwaZavmaymARUTRyCi
+0xea41221efc2F7110dA232D9faEFb00f2eDD41058
+
+
+
+cfm
+address: 0xb69430f2a2f33482036FC9109c217ec5df50C1c4
+mintCounts :address
+
+mintPrice: uint256: 100000000000
+nft : address: 0xEc9478B37E4FFd70f52812718F88F3FF0cE87b7C
+owner :address: 0xAd70df6Bd78734721F42CD8cCACe42b25D83Aa65
+whitelist : address: 0xAB2522C95FA629EAC6988b863b130A02C18854e5
+
+*/
+
 pragma solidity ^0.5.6;
 
 
@@ -1516,16 +1535,16 @@ contract CFMNftMinter is Ownable {
 
     CFMNft public nft;
     CFMNftWhitelist public whitelist;
-    IKIP7 public ijm;
+    IKIP7 public cfm;
 
     constructor(
         CFMNft _nft,
         CFMNftWhitelist _whitelist,
-        IKIP7 _ijm
+        IKIP7 _cfm
     ) public {
         nft = _nft;
         whitelist = _whitelist;
-        ijm = _ijm;
+        cfm = _cfm;
     }
 
     uint256 public mintPrice = 1000 * 1e8;
@@ -1550,12 +1569,12 @@ contract CFMNftMinter is Ownable {
         uint256 id = nft.totalSupply();
         nft.mint(msg.sender, id);
         nft.setMent(id, ment);
-        ijm.transferFrom(msg.sender, address(this), mintPrice);
+        cfm.transferFrom(msg.sender, address(this), mintPrice);
         mintCounts[msg.sender] = mintCounts[msg.sender].add(1);
         limit = limit.sub(1);
     }
 
-    function withdrawIjm() onlyOwner external {
-        ijm.transfer(owner(), ijm.balanceOf(address(this)));
+    function withdrawCfm() onlyOwner external {
+        cfm.transfer(owner(), cfm.balanceOf(address(this)));
     }
 }

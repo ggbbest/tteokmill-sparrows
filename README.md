@@ -8,5 +8,11 @@
 
 
 
-api.tteok.org
+https://c4ei.net/nft/
 wss://klaytn-node.klu.bs:9091
+
+
+- NFT : 0xEc9478B37E4FFd70f52812718F88F3FF0cE87b7C
+- Whitelist: 0xAB2522C95FA629EAC6988b863b130A02C18854e5
+- Minter: 0xea41221efc2F7110dA232D9faEFb00f2eDD41058
+
